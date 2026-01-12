@@ -56,6 +56,20 @@ export default function Home() {
     }
   };
 
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await fetch(`/api/messages?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        await fetchMessages();
+      }
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
+  };
+
   useEffect(() => {
     fetchMessages();
     const interval = setInterval(fetchMessages, 2000);
@@ -102,12 +116,21 @@ export default function Home() {
             messages.map((message) => (
               <div
                 key={message.id}
-                className="rounded-lg bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+                className="group relative rounded-lg bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
               >
-                <p className="text-slate-700">{message.content}</p>
-                <p className="mt-2 text-xs text-slate-400">
-                  {formatTimestamp(message.created_at)}
-                </p>
+                <p className="pr-8 text-slate-700">{message.content}</p>
+                <div className="mt-2 flex items-center justify-between">
+                  <p className="text-xs text-slate-400">
+                    {formatTimestamp(message.created_at)}
+                  </p>
+                  <button
+                    onClick={() => handleDelete(message.id)}
+                    className="text-xs text-red-400 opacity-0 transition-opacity hover:text-red-600 group-hover:opacity-100"
+                    title="Delete message"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             ))
           )}
